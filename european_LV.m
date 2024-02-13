@@ -2,7 +2,7 @@ function [price] = european_LV(S_0, K, T, beta, mu, alpha)
 
 % Defining the non-linear volatility model according to Funahashi and 
 % Kijima (2016)
-sigma_LV = @(S) (alpha + beta * S / S_0) * exp(-mu * S / S_0);
+sigma_LV = @(S) (alpha+beta*S/S_0)*exp(-mu*S/S_0);
 
 % Pricing the option according to the equations by
 % Funahashi and Kijima (2015)
