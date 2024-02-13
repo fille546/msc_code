@@ -1,6 +1,7 @@
 function [price] = european_CEV(S_0, K, T, sigma, beta)
 
-% Defining the Constant elasticity of variance volatility model
+% Defining the constant elasticity of variance volatility model according
+% to Funahashi and Kijima (2016)
 sigma_CEV=@(S) sigma*S^(beta-1);
 
 % Pricing the option according to the equations by
