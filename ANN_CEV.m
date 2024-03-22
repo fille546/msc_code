@@ -71,18 +71,18 @@ X_val = (X_val - X_mean) ./ X_std;
 % Configure the ANN (MathWorks, n.d.-f)
 layers = [
     featureInputLayer(6, 'Name', 'input')
-    fullyConnectedLayer(64, 'Name', 'fc1')
-    fullyConnectedLayer(64, 'Name', 'fc2')
-    fullyConnectedLayer(64, 'Name', 'fc3')
+    fullyConnectedLayer(64, 'Name', 'fc1') % 16/64
+    fullyConnectedLayer(64, 'Name', 'fc2') % 16/64
+    fullyConnectedLayer(64, 'Name', 'fc3') % 16/64
     reluLayer('Name', 'relu1')
-    fullyConnectedLayer(1, 'Name', 'output') % Output layer
+    fullyConnectedLayer(1, 'Name', 'output')
     regressionLayer('Name', 'output_reg')
 ];
 
 options = trainingOptions('adam', ...
     'MaxEpochs', 10, ...
     'MiniBatchSize', 2, ...
-    'ValidationData', {X_val, Y_method1_val}, ... % For Method 1
+    'ValidationData', {X_val, Y_method1_val}, ...
     'ValidationFrequency', 15, ...
     'ValidationPatience', 200, ...
     'Plots', 'training-progress');
