@@ -1,4 +1,4 @@
-% First set the random seed
+% First set the random seed, using the rng function (MathWorks, n.d.-b).
 rng(42);
 
 % Then add the ranges
@@ -10,7 +10,8 @@ sigma_range = [0.01, 0.5];
 K_range = [50, 150];
 beta_range = [0.6, 0.9];
 
-% Generate random samples within the ranges
+% Generate random samples within the ranges, using rand and diff functions
+% (MathWorks, n.d.-g, n.d.-c).
 T_samples = rand(num_samples, 1) * diff(T_range) + T_range(1);
 S0_samples = rand(num_samples, 1) * diff(S0_range) + S0_range(1);
 r_samples = rand(num_samples, 1) * diff(r_range) + r_range(1);
@@ -23,16 +24,23 @@ model = 'CEV';
 sym = 0;
 
 % Create a matrix for the inputs
-X = [T_samples, S0_samples, r_samples, K_samples, sigma_samples, beta_samples];
+X = [T_samples, S0_samples, r_samples, K_samples, sigma_samples, 
+    beta_samples];
 
-% Calculate the target values (with MC)
+% Calculate the target values (with MC), and using arrayfun to apply the
+% function on each element (MathWorks, n.d.-a).
+% Timing with the tic function (MathWorks, n.d.-e).
 tic;
-benchmark_prices = arrayfun(@(idx) MC_Option_Pricing(S0_samples(idx), K_samples(idx), T_samples(idx), r_samples(idx), sigma_samples(idx),NSim , model, 0, beta_samples(idx), 0, sym), 1:num_samples);
+benchmark_prices = arrayfun(@(idx) MC_Option_Pricing(S0_samples(idx), ...
+    K_samples(idx), T_samples(idx), r_samples(idx), sigma_samples(idx), ...
+    NSim , model, 0, beta_samples(idx), 0, sym), 1:num_samples);
 MC_target_values = toc;
 
-% Calculate the AE-values
+% Calculate the AE-values.
 tic;
-european_approx_prices = arrayfun(@(idx) european_CEV(S0_samples(idx), K_samples(idx), T_samples(idx), sigma_samples(idx), beta_samples(idx)), 1:num_samples);
+european_approx_prices = arrayfun(@(idx) european_CEV(S0_samples(idx), ...
+    K_samples(idx), T_samples(idx), sigma_samples(idx), ...
+    beta_samples(idx)), 1:num_samples);
 AE_target_values = toc;
 
 Y_method1 = benchmark_prices(:); 
@@ -60,7 +68,7 @@ X_std = std(X_train, 0, 1);
 X_train = (X_train - X_mean) ./ X_std;
 X_val = (X_val - X_mean) ./ X_std;
 
-% Configure the ANN
+% Configure the ANN (MathWorks, n.d.-f)
 layers = [
     featureInputLayer(6, 'Name', 'input')
     fullyConnectedLayer(64, 'Name', 'fc1')
@@ -98,7 +106,8 @@ M2_predict_full = M2_predict + (0.2 * AE_target_values);
 MC_val = 0.2 * MC_target_values;
 
 if size(Y_pred_method2_val, 1) ~= size(european_approx_prices_val, 1)
-    european_approx_prices_val = reshape(european_approx_prices_val, size(Y_pred_method2_val));
+    european_approx_prices_val = reshape(european_approx_prices_val, ...
+        size(Y_pred_method2_val));
 end
 
 % Add back the AE-values for M2
@@ -122,3 +131,33 @@ mae_method2_val = mean(abs(Y_method1_val - Y_pred_method2_val));
 ss_res_method2_val = sum((Y_method1_val - Y_pred_method2_val).^2);
 ss_tot_method2_val = sum((Y_method1_val - mean(Y_method1_val)).^2);
 r_squared_method2_val = 1 - ss_res_method2_val/ss_tot_method2_val;
+
+% References:
+% MathWorks. (n.d.-a). Apply function to each element of array - MATLAB 
+% arrayfun. Retrieved December 10, 2023, from 
+% https://se.mathworks.com/help/matlab/ref/arrayfun.html
+
+% MathWorks. (n.d.-b). Control random number generator - MATLAB rng. 
+% Retrieved December 10, 2023, from 
+% https://se.mathworks.com/help/matlab/ref/rng.html
+
+% MathWorks. (n.d.-c). Differences and approximate derivatives - 
+% MATLAB diff. Retrieved December 10, 2023, from 
+% https://se.mathworks.com/help/matlab/ref/diff.html
+
+% MathWorks. (n.d.-d). Random permutation of integers - 
+% MATLAB randperm. Retrieved December 10, 2023, from 
+% https://se.mathworks.com/help/matlab/ref/randperm.html
+
+% MathWorks. (n.d.-e). Start stopwatch timer - MATLAB tic. 
+% Retrieved March 19, 2024, from 
+% https://se.mathworks.com/help/matlab/ref/tic.html
+
+% MathWorks. (n.d.-f). Train neural network - MATLAB trainNetwork. 
+% Retrieved December 10, 2023, from 
+% https://se.mathworks.com/help/deeplearning/ref/trainnetwork.html
+
+% MathWorks. (n.d.-g). Uniformly distributed random numbers - 
+% MATLAB rand. Retrieved December 10, 2023, 
+% from https://se.mathworks.com/help/matlab/ref/rand.html
+
