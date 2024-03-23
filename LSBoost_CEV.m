@@ -21,7 +21,6 @@ beta_samples = rand(num_samples, 1) * diff (beta_range) + beta_range(1);
 
 NSim = 10000;
 model = 'CEV';
-sym = 0;
 
 % Create a matrix for the inputs.
 X = [T_samples, S0_samples, r_samples, K_samples, sigma_samples, 
@@ -31,9 +30,9 @@ X = [T_samples, S0_samples, r_samples, K_samples, sigma_samples,
 % function on each element (MathWorks, n.d.-a).
 % Timing with the tic function (MathWorks, n.d.-f).
 tic;
-benchmark_prices = arrayfun(@(idx) MC_Option_Pricing(S0_samples(idx), ...
+benchmark_prices = arrayfun(@(idx) MC(S0_samples(idx), ...
     K_samples(idx), T_samples(idx), r_samples(idx), sigma_samples(idx), ...
-    NSim , model, 0, beta_samples(idx), 0, sym), 1:num_samples);
+    NSim , model, 0, beta_samples(idx), 0), 1:num_samples);
 MC_target_values = toc;
 
 % Calculate the AE-values.

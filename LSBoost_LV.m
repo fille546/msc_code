@@ -23,7 +23,6 @@ alpha_samples = rand(num_samples, 1) * diff (alpha_range) + alpha_range(1);
 
 NSim = 10000;
 model = 'LV';
-sym = 0;
 
 % Create a matrix for the inputs.
 X = [T_samples, S0_samples, r_samples, K_samples, beta_samples,
@@ -33,9 +32,9 @@ X = [T_samples, S0_samples, r_samples, K_samples, beta_samples,
 % function on each element (MathWorks, n.d.-a).
 % Timing with the tic function (MathWorks, n.d.-f).
 tic;
-benchmark_prices = arrayfun(@(idx) MC_Option_Pricing(S0_samples(idx), ...
+benchmark_prices = arrayfun(@(idx) MC(S0_samples(idx), ...
     K_samples(idx), T_samples(idx), r_samples(idx), 0,NSim , model, ...
-    alpha_samples(idx), beta_samples(idx), mu_samples(idx), sym), ...
+    alpha_samples(idx), beta_samples(idx), mu_samples(idx)), ...
     1:num_samples);
 MC_target_values = toc;
 
